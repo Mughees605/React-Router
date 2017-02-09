@@ -104,12 +104,14 @@
 	    hashHistory = _require.hashHistory;
 
 	var Main = __webpack_require__(223);
+	var Login = __webpack_require__(224);
+	var TodoApp = __webpack_require__(225);
 
-	__webpack_require__(224);
+	__webpack_require__(226);
 	$(document).foundation();
 	// var Route = require('react-router').Route; It is same as upper beacuse we have to assign this same requier 
 	//  var obj =  { // It is same as below 
-	__webpack_require__(228);
+	__webpack_require__(230);
 	//   name : "andrew"
 	// }
 	// var {name} = obj;
@@ -117,7 +119,12 @@
 	ReactDOM.render(React.createElement(
 	  Router,
 	  { history: hashHistory },
-	  React.createElement(Route, { path: '/', component: Main })
+	  React.createElement(
+	    Route,
+	    { path: '/', component: Main },
+	    React.createElement(IndexRoute, { component: Login }),
+	    React.createElement(Route, { path: 'todo', component: TodoApp })
+	  )
 	), document.getElementById('app'));
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
@@ -24908,7 +24915,6 @@
 	"use strict";
 
 	var React = __webpack_require__(8);
-	var Nav = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"Nav\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 
 	var Main = React.createClass({
 	    displayName: "Main",
@@ -24917,20 +24923,7 @@
 	        return React.createElement(
 	            "div",
 	            null,
-	            React.createElement(
-	                "div",
-	                null,
-	                React.createElement(
-	                    "div",
-	                    null,
-	                    React.createElement(
-	                        "p",
-	                        null,
-	                        "Main.jsx Rendered"
-	                    ),
-	                    this.props.children
-	                )
-	            )
+	            this.props.children
 	        );
 	    }
 	});
@@ -24940,13 +24933,228 @@
 /* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	var React = __webpack_require__(8);
+
+	var _require = __webpack_require__(166),
+	    Link = _require.Link;
+
+	var Login = React.createClass({
+	    displayName: 'Login',
+
+	    render: function render() {
+	        return React.createElement(
+	            'div',
+	            { className: 'container-fluid' },
+	            React.createElement('input', { type: 'email', className: 'form', placeholder: 'Enter your email' }),
+	            React.createElement('input', { type: 'password', className: 'form', placeholder: 'Enter your password' }),
+	            React.createElement(
+	                Link,
+	                { to: '/todo', className: 'button expanded' },
+	                'Log In'
+	            )
+	        );
+	    }
+	});
+	module.exports = Login;
+
+/***/ },
+/* 225 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var React = __webpack_require__(8);
+
+	var TodoForm = React.createClass({
+	    displayName: "TodoForm",
+
+	    handleList: function handleList(e) {
+	        e.preventDefault();
+	        var value = this.refs.name.value;
+	        if (value.length > 0) {
+	            this.props.passValue(value);
+	            this.refs.name.value = "";
+	        } else {
+	            alert("please write something");
+	        }
+	    },
+	    render: function render() {
+	        return React.createElement(
+	            "div",
+	            { className: "row" },
+	            React.createElement(
+	                "div",
+	                { className: "large-12 columns" },
+	                React.createElement(
+	                    "div",
+	                    { className: "row collapse" },
+	                    React.createElement(
+	                        "div",
+	                        { className: "small-10 columns" },
+	                        React.createElement("input", { type: "text", ref: "name", className: "form-control" })
+	                    ),
+	                    React.createElement(
+	                        "div",
+	                        { className: "small-2 columns" },
+	                        React.createElement(
+	                            "a",
+	                            { href: "#", className: "button postfix", onClick: this.handleList },
+	                            "Add"
+	                        )
+	                    )
+	                )
+	            )
+	        );
+	    }
+	});
+
+	var TodoList = React.createClass({
+	    displayName: "TodoList",
+
+	    getInitialState: function getInitialState() {
+	        return {
+	            editing: false
+	        };
+	    },
+
+	    remove: function remove() {
+	        this.props.onRemove(this.props.index);
+	    },
+
+	    edit: function edit() {
+	        this.setState({
+	            editing: true
+	        });
+	    },
+	    save: function save() {},
+
+	    renderDisplay: function renderDisplay() {
+	        return React.createElement(
+	            "li",
+	            null,
+	            this.props.children,
+	            React.createElement(
+	                "span",
+	                null,
+	                React.createElement(
+	                    "button",
+	                    { onClick: this.remove, className: "alert button" },
+	                    "delete"
+	                ),
+	                React.createElement(
+	                    "button",
+	                    { onClick: this.edit, className: "primary button" },
+	                    "edit"
+	                )
+	            )
+	        );
+	    },
+	    takeHandleSave: function takeHandleSave() {
+	        var saveValue = this.refs.name.value;
+	        this.props.onSave(saveValue, this.props.index);
+	        this.setState({
+	            editing: false
+	        });
+	    },
+
+	    renderForm: function renderForm() {
+
+	        return React.createElement(
+	            "form",
+	            null,
+	            React.createElement("input", { type: "text", ref: "name", defaultValue: this.props.children }),
+	            React.createElement(
+	                "button",
+	                { onClick: this.takeHandleSave, className: "success button right" },
+	                "save"
+	            )
+	        );
+	    },
+
+	    render: function render() {
+	        if (this.state.editing) {
+	            return this.renderForm();
+	        } else {
+	            return this.renderDisplay();
+	        }
+	    }
+	});
+
+	var TodoApp = React.createClass({
+	    displayName: "TodoApp",
+
+	    getInitialState: function getInitialState() {
+	        return {
+	            editing: false,
+
+	            notes: []
+	        };
+	    },
+	    addList: function addList(val) {
+	        var arr = this.state.notes;
+	        arr.push(val);
+	        this.setState({
+	            notes: arr
+	        });
+	    },
+	    handleRemove: function handleRemove(i) {
+	        var arr = this.state.notes;
+	        arr.splice(i, 1);
+	        this.setState({
+	            notes: arr
+	        });
+	    },
+	    handleSave: function handleSave(save, i) {
+	        var arr = this.state.notes;
+	        arr[i] = save;
+	        this.setState({
+	            notes: arr
+	        });
+	    },
+	    eachNote: function eachNote(note, i) {
+	        return React.createElement(
+	            TodoList,
+	            { key: i, index: i, onRemove: this.handleRemove, onSave: this.handleSave },
+	            note
+	        );
+	    },
+	    render: function render() {
+	        return React.createElement(
+	            "div",
+	            { className: "row" },
+	            React.createElement(
+	                "div",
+	                { className: "small-6 small-centered columns" },
+	                React.createElement(
+	                    "h1",
+	                    { className: "text-center" },
+	                    "To Do App"
+	                ),
+	                React.createElement(TodoForm, { passValue: this.addList }),
+	                React.createElement(
+	                    "ul",
+	                    { className: "small-10" },
+	                    this.state.notes.map(this.eachNote)
+	                )
+	            )
+	        );
+	    }
+	});
+	module.exports = TodoApp;
+
+/***/ },
+/* 226 */
+/***/ function(module, exports, __webpack_require__) {
+
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(225);
+	var content = __webpack_require__(227);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(227)(content, {});
+	var update = __webpack_require__(229)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -24963,10 +25171,10 @@
 	}
 
 /***/ },
-/* 225 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(226)();
+	exports = module.exports = __webpack_require__(228)();
 	// imports
 
 
@@ -24977,7 +25185,7 @@
 
 
 /***/ },
-/* 226 */
+/* 228 */
 /***/ function(module, exports) {
 
 	/*
@@ -25033,7 +25241,7 @@
 
 
 /***/ },
-/* 227 */
+/* 229 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -25287,16 +25495,16 @@
 
 
 /***/ },
-/* 228 */
+/* 230 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(229);
+	var content = __webpack_require__(231);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(227)(content, {});
+	var update = __webpack_require__(229)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -25313,15 +25521,15 @@
 	}
 
 /***/ },
-/* 229 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(226)();
+	exports = module.exports = __webpack_require__(228)();
 	// imports
 
 
 	// module
-	exports.push([module.id, ".page-title{\r\n    margin-top: 2.5rem;\r\n    margin-bottom: 2.5rem;\r\n    color: #555\r\n}", ""]);
+	exports.push([module.id, "div.container-fluid{\r\n    width:400px;\r\n    margin: 50px auto;\r\n}\r\ndiv.container-fluid Link{\r\n    border:1px solid black;\r\n    text-align: center;\r\n}\r\n\r\nli{\r\n  list-style-type:none;\r\n  border:1px solid black;\r\n  padding:10px 5px 20px 5px;\r\n  font-size:20px;\r\n  margin:5px;\r\n}\r\nli button{\r\n  float:right;\r\n  margin:2px;\r\n  padding:10px;\r\n  border:1px solid black;\r\n  font-size:15px;\r\n}", ""]);
 
 	// exports
 

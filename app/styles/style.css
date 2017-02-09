@@ -1,5 +1,23 @@
-.page-title{
-    margin-top: 2.5rem;
-    margin-bottom: 2.5rem;
-    color: #555
+div.container-fluid{
+    width:400px;
+    margin: 50px auto;
+}
+div.container-fluid Link{
+    border:1px solid black;
+    text-align: center;
+}
+
+li{
+  list-style-type:none;
+  border:1px solid black;
+  padding:10px 5px 20px 5px;
+  font-size:20px;
+  margin:5px;
+}
+li button{
+  float:right;
+  margin:2px;
+  padding:10px;
+  border:1px solid black;
+  font-size:15px;
 }
